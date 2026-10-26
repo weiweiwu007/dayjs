@@ -64,6 +64,27 @@ it('Add Time days', () => {
   expect(dayjs().add('2', 'years').valueOf()).toBe(moment().add('2', 'years').valueOf())
 })
 
+describe('Month-end arithmetic', () => {
+  const cases = [
+    ['2020-01-31', 'add', '2020-02-29'],
+    ['2021-01-31', 'add', '2021-02-28'],
+    ['2020-03-31', 'subtract', '2020-02-29'],
+    ['2021-03-31', 'subtract', '2021-02-28']
+  ]
+
+  cases.forEach(([date, operation, expected]) => {
+    it(`${date} ${operation} one month preserves noon and the original`, () => {
+      const original = dayjs(`${date}T12:00:00.000`)
+      const timestamp = original.valueOf()
+      const result = original[operation](1, 'month')
+
+      expect(result.format('YYYY-MM-DD HH:mm:ss.SSS')).toBe(`${expected} 12:00:00.000`)
+      expect(result).not.toBe(original)
+      expect(original.valueOf()).toBe(timestamp)
+    })
+  })
+})
+
 it('Add Time with decimal', () => {
   expect(dayjs().add(0.4, 'day').valueOf()).toBe(moment().add(0.4, 'day').valueOf())
   expect(dayjs().add(0.5, 'day').valueOf()).toBe(moment().add(0.5, 'day').valueOf())
